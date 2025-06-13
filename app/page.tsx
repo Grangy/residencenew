@@ -9,9 +9,9 @@ export default function Home() {
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
+      <HeroVideo />
       <Hero />
       <Hero2 />
-      <HeroVideo />
       <Footer />
     </main>
   )
