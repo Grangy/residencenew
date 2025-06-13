@@ -2,6 +2,7 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Hero from '@/sections/Hero'
+import HeroVideo from '@/sections/HeroVideo'
 import Hero2 from '@/sections/Hero2'
 
 export default function Home() {
@@ -10,7 +11,9 @@ export default function Home() {
       <Header />
       <Hero />
       <Hero2 />
+      <HeroVideo />
       <Footer />
     </main>
   )
 }
+
