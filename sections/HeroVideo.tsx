@@ -34,7 +34,7 @@ export default function HeroVideo() {
             ЛЕТО БЕЗ ОСТАНОВОК
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-6">
-            Испытай энергию с резиденцией.
+            2 карты по цене 1
           </p>
           <button
             onClick={() => setPopupOpen(true)}

@@ -19,14 +19,15 @@ export default function Home() {
         <HeroVideo />
       </div>
 
-      {/* Сезонное предложение */}
-      <div id="advantages">
-        <Hero />
-      </div>
-
       {/* О резиденции */}
       <div id="programs">
         <Hero2 />
+      </div>
+
+
+      {/* Сезонное предложение */}
+      <div id="advantages">
+        <Hero />
       </div>
 
       {/* Интерактивные преимущества */}
