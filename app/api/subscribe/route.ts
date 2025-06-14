@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const data: { name: string; phone: string } = await request.json()
     await fetch(
-      'https://webhook.site/8cd0b7d7-9bc8-444b-aaa2-c1f60e1e5c70',
+      'https://sp1-nova.ru/api/site-integration/theresidence.amocrm.ru/7533d2816fc/',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
