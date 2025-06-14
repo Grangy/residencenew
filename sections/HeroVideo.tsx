@@ -31,10 +31,10 @@ export default function HeroVideo() {
         {/* Контент поверх видео */}
         <div className="relative z-20 px-6">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">
-            ТВОЯ СИЛА В ДВИЖЕНИИ
+            ЛЕТО БЕЗ ОСТАНОВОК
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-6">
-            Испытай энергию с нашим клубом.
+            Испытай энергию с резиденцией.
           </p>
           <button
             onClick={() => setPopupOpen(true)}

@@ -1,62 +1,54 @@
-/* equinox-dark/components/Header.tsx */
+// components/Header.tsx
 'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import Popup from './Popup'
 
-// Список пунктов меню
+// Список пунктов меню с id секций
 const navItems = [
-  { label: 'КЛУБ', href: '/' },
-  { label: 'ПРЕИМУЩЕСТВА', href: '/' },
-  { label: 'ПРОГРАММЫ', href: '/' },
-  { label: 'SPA', href: '/' },
-  { label: 'БАР', href: '/' },
+  { label: 'ГЛАВНАЯ', id: 'club' },          // Видео секция
+  { label: 'ПРЕДЛОЖЕНИЕ', id: 'advantages' }, // Сезонное предложение
+  { label: 'О РЕЗИДЕНЦИИ', id: 'programs' }, // О резиденции
+  { label: 'ПРЕИМУЩЕСТВА', id: 'spa' },      // Интерактивные преимущества
+  { label: 'ИНТЕРЬЕРЫ', id: 'bar' },         // Карусель интерьеров
 ]
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [popupOpen, setPopupOpen] = useState(false)
 
+  const handleNavClick = (id: string) => {
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
+    setMenuOpen(false)
+  }
+
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 bg-black text-white border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center relative">
-          {/* Logo (desktop) */}
           <Link href="/" className="hidden md:block">
-            <Image
-              src="/logo2.png"
-              alt="The Residence Logo"
-              width={140}
-              height={40}
-              className="h-auto w-auto"
-              priority
-            />
+            <Image src="/logo2.png" alt="The Residence Logo" width={140} height={40} priority />
           </Link>
-
-          {/* Logo (mobile centered) */}
           <Link href="/" className="block md:hidden absolute left-1/2 -translate-x-1/2">
-            <Image
-              src="/logo2.png"
-              alt="The Residence Logo"
-              width={120}
-              height={34}
-              className="h-auto w-auto"
-              priority
-            />
+            <Image src="/logo2.png" alt="The Residence Logo" width={120} height={34} priority />
           </Link>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex space-x-6 items-center">
-            {navItems.map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
+            {navItems.map(({ label, id }) => (
+              <button
+                key={id}
+                onClick={() => handleNavClick(id)}
                 className="hover:text-lime-400 transition-colors"
               >
                 {label}
-              </Link>
+              </button>
             ))}
             <button
               onClick={() => setPopupOpen(true)}
@@ -69,27 +61,21 @@ export default function Header() {
           </nav>
 
           {/* Mobile menu toggle */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden text-white z-10"
-            aria-label="Toggle Menu"
-          >
+          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-white z-10">
             {menuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
-        {/* Mobile menu */}
         {menuOpen && (
           <div className="md:hidden bg-black text-white px-6 pb-4 space-y-3">
-            {navItems.map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                onClick={() => setMenuOpen(false)}
-                className="block hover:text-lime-400"
+            {navItems.map(({ label, id }) => (
+              <button
+                key={id}
+                onClick={() => handleNavClick(id)}
+                className="block hover:text-lime-400 w-full text-left"
               >
                 {label}
-              </Link>
+              </button>
             ))}
             <button
               onClick={() => {
@@ -98,7 +84,7 @@ export default function Header() {
               }}
               className="block w-full text-center mt-2 px-4 py-2 bg-gradient-to-r from-lime-400 to-yellow-300 text-black font-semibold hover:brightness-110 transition-all duration-300"
             >
-              присоедини́ться
+              ПРИСОЕДИНЯЙСЯ
             </button>
           </div>
         )}
