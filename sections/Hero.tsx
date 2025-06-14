@@ -76,7 +76,7 @@ export default function Hero() {
               inView ? 'opacity-100 translate-y-0 delay-400' : 'opacity-0 translate-y-6'
             }`}
           >
-            Месяц открытых дверей за&nbsp;
+            Месяц открытых дверей и премиум фитнес за&nbsp;
             <span className="text-gray-400 line-through whitespace-nowrap">
               20&nbsp;000&nbsp;₽/мес
             </span>,&nbsp;
