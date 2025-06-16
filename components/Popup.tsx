@@ -5,6 +5,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { X } from 'lucide-react'
 import Image from 'next/image'
 
+declare global {
+  interface Window {
+    ym?: (counterId: number, event: string, goal: string) => void
+  }
+}
+
 export interface PopupProps {
   isOpen: boolean
   onClose: () => void
@@ -21,10 +27,12 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
   const openTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Handle open/close transitions
   useEffect(() => {
     if (isOpen) {
-      openTimeoutRef.current = setTimeout(() => setIsVisible(true), 100)
+      openTimeoutRef.current = setTimeout(() => {
+        setIsVisible(true)
+        window.ym?.(102670742, 'reachGoal', 'popup_open')
+      }, 100)
     } else {
       setIsClosing(true)
       closeTimeoutRef.current = setTimeout(() => {
@@ -38,7 +46,6 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
     }
   }, [isOpen])
 
-  // Close on Escape key
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isVisible && !isClosing) {
@@ -50,7 +57,6 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [isVisible, isClosing, onClose])
 
-  // Submit handler
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     if (isSubmitted || isClosing) return
@@ -70,6 +76,7 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
     if (hasError) return
 
     setIsSubmitted(true)
+
     try {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
@@ -77,11 +84,13 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
         body: JSON.stringify(formData),
       })
       if (!res.ok) throw new Error('Network response was not ok')
+
+      window.ym?.(102670742, 'reachGoal', 'form_submit')
+
     } catch (err) {
       console.error(err)
     }
 
-    // Close pop-up after delay
     closeTimeoutRef.current = setTimeout(() => {
       setIsClosing(true)
       closeTimeoutRef.current = setTimeout(() => {
@@ -92,7 +101,6 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
     }, 1000)
   }, [formData, isSubmitted, isClosing, onClose])
 
-  // Click outside to close
   const handleOverlayClick = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget && isVisible && !isClosing) {
       setIsClosing(true)
