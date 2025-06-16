@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       port: 465,
       secure: true, // true для 465, false для 587
       auth: {
-        user: 'targetre@yandex.ru',   // твой яндекс email
+        user: 'targetre@yandex.ru',   // твой яндекс email2
         pass: 'hijsmcqseevsvvyf',      // пароль приложения
       },
     })
