@@ -73,7 +73,7 @@ export default function Hero2() {
               className="relative bg-lime-400 skew-x-[20deg] hover:skew-x-[15deg] transition-all duration-300"
             >
               <span className="inline-block -skew-x-[20deg] px-4 py-4 text-black text-lg font-semibold">
-                О резиденции
+                О Резиденции
               </span>
             </button>
             <button
