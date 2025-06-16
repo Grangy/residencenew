@@ -169,12 +169,15 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
               />
               {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
             </div>
-            <button
-              type="submit"
-              className="w-full px-6 py-3 bg-lime-400 text-black font-bold skew-x-[15deg] hover:skew-x-[10deg] transition duration-300"
-            >
-              {isSubmitted ? 'Отправлено' : 'Отправить'}
-            </button>
+<button
+  type="submit"
+  className="w-full px-6 py-3 bg-lime-400 text-black font-bold transform transition duration-300 hover:skew-x-[10deg] skew-x-[15deg]"
+>
+  <span className="block transform -skew-x-[15deg] hover:-skew-x-[10deg]">
+    {isSubmitted ? 'Отправлено' : 'Отправить'}
+  </span>
+</button>
+
           </form>
         ) : (
           <div className="text-center text-lg text-lime-400">Спасибо! Мы свяжемся с вами.</div>
