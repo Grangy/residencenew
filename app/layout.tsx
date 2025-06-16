@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { YMInitializer } from 'react-yandex-metrika'
+import YandexMetrika from '../components/YandexMetrika'
 
 
 const geistSans = Geist({
@@ -57,16 +57,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-    <YMInitializer
-      accounts={[102670742]}
-      options={{
-        webvisor: true,
-        clickmap: true,
-        trackLinks: true,
-        accurateTrackBounce: true,
-      }}
-      version="2"
-    />
+        <YandexMetrika />
       </body>
     </html>
   );
