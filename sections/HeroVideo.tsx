@@ -40,7 +40,7 @@ export default function HeroVideo() {
             onClick={() => setPopupOpen(true)}
             className="relative px-6 py-3 text-white font-bold bg-black border border-lime-400 skew-x-[20deg] hover:brightness-110 transition-all duration-300"
           >
-            <span className="-skew-x-[20deg] block">ПРИСОЕДИНЯЙСЯ</span>
+            <span className="-skew-x-[20deg] block">ЗАБЕРИ КАРТУ</span>
           </button>
         </div>
       </section>
