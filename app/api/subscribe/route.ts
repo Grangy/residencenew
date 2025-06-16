@@ -14,8 +14,9 @@ import nodemailer from 'nodemailer'
  */
 
 // === Telegram ===
-const TELEGRAM_BOT_TOKEN = '8101255214:AAF-JIJy4J3A7w6UXcuHx1tNCtUwbyGFoDc'
-const TELEGRAM_CHAT_ID = '-4631670425' // группа «заявки»
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8101255214:AAF-JIJy4J3A7w6UXcuHx1tNCtUwbyGFoDc'
+// ⚠️ Убедись, что бот добавлен в группу и назначен админом
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '-1002703240400' // например «-1004631670425» для супергруппы
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
 
 export async function POST(request: NextRequest) {
@@ -38,8 +39,8 @@ export async function POST(request: NextRequest) {
       port: 465,
       secure: true,
       auth: {
-        user: 'targetre@yandex.ru',
-        pass: 'hijsmcqseevsvvyf',
+        user: process.env.SMTP_USER || 'targetre@yandex.ru',
+        pass: process.env.SMTP_PASS || 'hijsmcqseevsvvyf',
       },
     })
 
@@ -52,9 +53,9 @@ export async function POST(request: NextRequest) {
     })
 
     /* 3. Telegram */
-    const telegramMessage = `\u2705 <b>Новая заявка</b>%0A\n<b>Имя:</b> ${data.name}%0A<b>Телефон:</b> ${data.phone}`
+    const telegramMessage = `✅ <b>Новая заявка</b>\n<b>Имя:</b> ${data.name}\n<b>Телефон:</b> ${data.phone}`
 
-    await fetch(TELEGRAM_API_URL, {
+    const tgResponse = await fetch(TELEGRAM_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -64,6 +65,12 @@ export async function POST(request: NextRequest) {
         disable_web_page_preview: true,
       }),
     })
+
+    // Telegram API не бросает ошибку при 400/403, проверяем вручную
+    const tgJson = await tgResponse.json().catch(() => ({}))
+    if (!tgResponse.ok) {
+      throw new Error(`Telegram error ${tgResponse.status}: ${tgJson?.description || 'unknown'}`)
+    }
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
