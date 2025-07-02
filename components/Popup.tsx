@@ -1,9 +1,9 @@
-/* equinox-dark/components/Popup.tsx */
 'use client'
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { X } from 'lucide-react'
 import Image from 'next/image'
+import { getUtmFromStorage } from '@/utils/utm'       // ← НОВОЕ
 
 declare global {
   interface Window {
@@ -27,6 +27,7 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
   const openTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  /* ---------- анимация открытия/закрытия ---------- */
   useEffect(() => {
     if (isOpen) {
       openTimeoutRef.current = setTimeout(() => {
@@ -46,6 +47,7 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
     }
   }, [isOpen])
 
+  /* ---------- Esc для закрытия ---------- */
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isVisible && !isClosing) {
@@ -57,56 +59,70 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [isVisible, isClosing, onClose])
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isSubmitted || isClosing) return
+  /* ---------- отправка формы ---------- */
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (isSubmitted || isClosing) return
 
-    const newErrors = { name: '', phone: '' }
-    let hasError = false
+      /* валидация */
+      const newErrors = { name: '', phone: '' }
+      let hasError = false
+      if (!formData.name.trim()) {
+        newErrors.name = 'Пожалуйста, введите ваше имя'
+        hasError = true
+      }
+      if (
+        !formData.phone.trim() ||
+        !/^\+?\d{10,15}$/.test(formData.phone.replace(/\D/g, ''))
+      ) {
+        newErrors.phone = 'Пожалуйста, введите корректный номер телефона'
+        hasError = true
+      }
+      setErrors(newErrors)
+      if (hasError) return
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Пожалуйста, введите ваше имя'
-      hasError = true
-    }
-    if (!formData.phone.trim() || !/^\+?\d{10,15}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Пожалуйста, введите корректный номер телефона'
-      hasError = true
-    }
-    setErrors(newErrors)
-    if (hasError) return
+      setIsSubmitted(true)
 
-    setIsSubmitted(true)
+      /* собираем payload = данные формы + UTM */
+      const payload = { ...formData, ...getUtmFromStorage() }
 
-    try {
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-      if (!res.ok) throw new Error('Network response was not ok')
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('Network response was not ok')
 
-      window.ym?.(102670742, 'reachGoal', 'form_submit')
+        window.ym?.(102670742, 'reachGoal', 'form_submit')
+      } catch (err) {
+        console.error(err)
+      }
 
-    } catch (err) {
-      console.error(err)
-    }
-
-    closeTimeoutRef.current = setTimeout(() => {
-      setIsClosing(true)
+      /* анимация закрытия после «спасибо» */
       closeTimeoutRef.current = setTimeout(() => {
-        onClose()
-        setIsSubmitted(false)
-        setFormData({ name: '', phone: '' })
-      }, 300)
-    }, 1000)
-  }, [formData, isSubmitted, isClosing, onClose])
+        setIsClosing(true)
+        closeTimeoutRef.current = setTimeout(() => {
+          onClose()
+          setIsSubmitted(false)
+          setFormData({ name: '', phone: '' })
+        }, 300)
+      }, 1000)
+    },
+    [formData, isSubmitted, isClosing, onClose],
+  )
 
-  const handleOverlayClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget && isVisible && !isClosing) {
-      setIsClosing(true)
-      closeTimeoutRef.current = setTimeout(onClose, 300)
-    }
-  }, [isVisible, isClosing, onClose])
+  /* ---------- клик по оверлею ---------- */
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget && isVisible && !isClosing) {
+        setIsClosing(true)
+        closeTimeoutRef.current = setTimeout(onClose, 300)
+      }
+    },
+    [isVisible, isClosing, onClose],
+  )
 
   if (!isOpen && !isVisible) return null
 
@@ -116,10 +132,9 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="popup-title"
-      className={
-        `fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm ` +
-        `transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`
-      }
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${
+        isClosing ? 'opacity-0' : 'opacity-100'
+      }`}
     >
       <div
         ref={popupRef}
@@ -144,6 +159,7 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
           Присоединяйтесь к нам!
         </h2>
 
+        {/* ---------- форма ---------- */}
         {!isSubmitted ? (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -152,7 +168,7 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
                 type="text"
                 placeholder="Ваше имя"
                 value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full p-3 bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:border-lime-400"
                 required
               />
@@ -163,24 +179,26 @@ export default function Popup({ isOpen, onClose }: PopupProps) {
                 type="tel"
                 placeholder="Ваш телефон"
                 value={formData.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="w-full p-3 bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:border-lime-400"
                 required
               />
               {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
             </div>
-<button
-  type="submit"
-  className="w-full px-6 py-3 bg-lime-400 text-black font-bold transform transition duration-300 hover:skew-x-[10deg] skew-x-[15deg]"
->
-  <span className="block transform -skew-x-[15deg] hover:-skew-x-[10deg]">
-    {isSubmitted ? 'Отправлено' : 'Отправить'}
-  </span>
-</button>
 
+            <button
+              type="submit"
+              className="w-full px-6 py-3 bg-lime-400 text-black font-bold transform transition duration-300 hover:skew-x-[10deg] skew-x-[15deg]"
+            >
+              <span className="block transform -skew-x-[15deg] hover:-skew-x-[10deg]">
+                {isSubmitted ? 'Отправлено' : 'Отправить'}
+              </span>
+            </button>
           </form>
         ) : (
-          <div className="text-center text-lg text-lime-400">Спасибо! Мы свяжемся с вами.</div>
+          <div className="text-center text-lg text-lime-400">
+            Спасибо! Мы свяжемся с вами.
+          </div>
         )}
       </div>
     </div>
