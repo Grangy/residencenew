@@ -76,13 +76,13 @@ export default function Hero() {
               inView ? 'opacity-100 translate-y-0 delay-400' : 'opacity-0 translate-y-6'
             }`}
           >
-            Месяц открытых дверей и премиум фитнес за&nbsp;
+            Дневная карта за&nbsp;
             <span className="text-gray-400 line-through whitespace-nowrap">
-              20&nbsp;000&nbsp;₽/мес
+              10&nbsp;000&nbsp;₽/мес
             </span>,&nbsp;
             <span className="text-lime-400 font-bold whitespace-nowrap text-4xl">
               <br></br>
-              9&nbsp;950&nbsp;₽/мес
+              8&nbsp;800&nbsp;₽/мес
             </span>
           </p>
 
