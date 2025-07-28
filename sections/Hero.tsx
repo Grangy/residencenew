@@ -82,7 +82,7 @@ export default function Hero() {
             </span>,&nbsp;
             <span className="text-lime-400 font-bold whitespace-nowrap text-4xl">
               <br></br>
-              8&nbsp;800&nbsp;₽/мес
+              5&nbsp;800&nbsp;₽/мес
             </span>
           </p>
 
